@@ -81,6 +81,14 @@ impl<T: fmt::Display> fmt::Display for Path<T> {
     }
 }
 
+impl<T: Sized> From<T> for Path<T> {
+    fn from(inner: T) -> Self {
+        Path {
+            inner
+        }
+    }
+}
+
 /// Extract typed information from the request's path.
 ///
 /// ## Example
@@ -113,8 +121,8 @@ impl<T: fmt::Display> fmt::Display for Path<T> {
 /// }
 /// ```
 impl<T> FromRequest for Path<T>
-where
-    T: DeserializeOwned + Validate,
+    where
+        T: DeserializeOwned + Validate,
 {
     type Error = actix_web::Error;
     type Future = Ready<Result<Self, Self::Error>>;
@@ -203,8 +211,8 @@ pub struct PathConfig {
 impl PathConfig {
     /// Set custom error handler
     pub fn error_handler<F>(mut self, f: F) -> Self
-    where
-        F: Fn(Error, &HttpRequest) -> actix_web::Error + Send + Sync + 'static,
+        where
+            F: Fn(Error, &HttpRequest) -> actix_web::Error + Send + Sync + 'static,
     {
         self.ehandler = Some(Arc::new(f));
         self
